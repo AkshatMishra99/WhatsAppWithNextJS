@@ -18,7 +18,6 @@ function Sidebar() {
 	);
 
 	const [chatsSnapshot] = useCollection(userChatRef);
-	console.log(chatsSnapshot);
 	const createChat = async () => {
 		const input = prompt(
 			"Please enter the email address for the user you want to chat with?"

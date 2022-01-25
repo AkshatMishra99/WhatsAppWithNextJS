@@ -1,3 +1,3 @@
 module.exports = function getRecipientEmail(users, userLoggedIn) {
-	return users?.find((user) => user !== userLoggedIn?.email);
+	return users?.find((user) => String(user) !== String(userLoggedIn?.email));
 };

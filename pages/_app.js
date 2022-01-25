@@ -20,7 +20,6 @@ function MyApp({ Component, pageProps }) {
 				},
 				{ merge: true }
 			);
-			console.log(user);
 		}
 	}, [user]);
 
