@@ -51,7 +51,7 @@ export async function getServerSideProps(context) {
 		}))
 		.map((message) => ({
 			...message,
-			timestamp: message.timestamp.toDate().getTime()
+			timestamp: message.timestamp?.toDate().getTime()
 		}));
 	// PREP the chats
 	const chatRes = await getDoc(ref);
@@ -71,13 +71,20 @@ export async function getServerSideProps(context) {
 
 const Container = styled.div`
 	display: flex;
+	overflow: auto;
+	::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* firefox */
+	/* min-width: 650px; */
 `;
 
 const ChatContainer = styled.div`
 	flex: 1;
 	overflow: scroll;
 	height: 100vh;
-
+	min-width: 450px;
 	::-webkit-scrollbar {
 		display: none;
 	}

@@ -82,7 +82,15 @@ const Container = styled.div`
 	/* width: 20%; */
 	box-shadow: 1px 0px 20px -3px rgba(0, 0, 0, 0.1);
 	height: 100vh;
-	min-width: 30%;
+	min-width: 300px;
+	max-width: 350px;
+	height: 100vh;
+	overflow-y: scroll;
+	::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* firefox */
 	/* position: absolute;
 	left: 0; */
 `;
@@ -98,6 +106,7 @@ const Header = styled.div`
 	border-bottom: 1px solid whitesmoke;
 	padding: 15px;
 	height: 80px;
+	background-color: white;
 `;
 
 const UserAvatar = styled(Avatar)`
