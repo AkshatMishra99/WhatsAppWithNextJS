@@ -50,11 +50,15 @@ function Sidebar() {
 	return (
 		<Container>
 			<Header>
-				<UserAvatar
-					onClick={signOut}
-					alt={user?.name}
-					src={user?.photoURL}
-				/>
+				{user?.photoURL ? (
+					<UserAvatar
+						onClick={signOut}
+						alt={user?.name}
+						src={user?.photoURL}
+					/>
+				) : (
+					<UserAvatar>{user.email[0]}</UserAvatar>
+				)}
 				<IconsContainer>
 					<IconButton>
 						<ChatIcon />

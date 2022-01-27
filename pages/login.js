@@ -5,9 +5,7 @@ import styled from "styled-components";
 import { auth, provider } from "../firebase";
 function Login() {
 	const signIn = () => {
-		signInWithPopup(auth, provider)
-			.then((result) => console.log(result))
-			.catch(alert);
+		signInWithPopup(auth, provider).catch(alert);
 	};
 	return (
 		<Container>

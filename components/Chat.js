@@ -27,7 +27,14 @@ function Chat(props) {
 	};
 	return (
 		<Container onClick={createChat}>
-			<UserAvatar alt={userDetails?.name} src={userDetails?.photoURL} />
+			{userDetails?.photoURL ? (
+				<UserAvatar
+					alt={userDetails?.name}
+					src={userDetails?.photoURL}
+				/>
+			) : (
+				<UserAvatar>{recipientEmail[0]}</UserAvatar>
+			)}
 			<EmailContainer>{recipientEmail}</EmailContainer>
 		</Container>
 	);

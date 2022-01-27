@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import { useCollection } from "react-firebase-hooks/firestore";
 import styled from "styled-components";
 import { auth, db } from "../firebase";
-import useGetUser from "../hooks/useGetUser";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import Message from "./Message";
@@ -22,16 +21,20 @@ import SendIcon from "@material-ui/icons/Send";
 import MicIcon from "@material-ui/icons/Mic";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import getRecipientEmail from "../utils/getRecipientEmail";
+import TimeAgo from "timeago-react";
+import { useRef } from "react";
 function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
-	const recipientEmail = useGetUser(chat.users);
+	const recipientEmail = getRecipientEmail(chat.users, user);
+	const endOfMessageRef = useRef(null);
 	const userRef = query(
 		collection(db, "users"),
 		where("email", "==", recipientEmail)
 	);
 	const [recipientUserSnapshot] = useCollection(userRef);
+	console.log("here is recipient user snapshot", recipientUserSnapshot);
 	const recipient = recipientUserSnapshot?.docs?.[0]?.data();
-
 	const router = useRouter();
 	const [messagesSnapshot] = useCollection(
 		query(
@@ -43,7 +46,6 @@ function ChatScreen({ chat, messages }) {
 		)
 	);
 	const showMessages = () => {
-		console.log(messagesSnapshot);
 		if (messagesSnapshot) {
 			return messagesSnapshot.docs.map((doc) => (
 				<Message
@@ -53,6 +55,14 @@ function ChatScreen({ chat, messages }) {
 						...doc?.data(),
 						timestamp: doc?.data()?.timestamp?.toDate().getTime()
 					}}
+				/>
+			));
+		} else {
+			return messages.map((message) => (
+				<Message
+					message={message}
+					user={message.user}
+					key={message.id}
 				/>
 			));
 		}
@@ -69,10 +79,16 @@ function ChatScreen({ chat, messages }) {
 	const onTextChange = (e) => {
 		setTextInput(e.target.value);
 	};
+
+	const scrollToBottom = (e) => {
+		endOfMessageRef.current.scrollIntoView({
+			behavior: "smooth",
+			block: "start"
+		});
+	};
 	const sendMessage = (e) => {
 		e.preventDefault();
 		if (!textInput) return;
-		console.log("clicked");
 		// update the last seen
 		setDoc(
 			doc(collection(db, "users"), user.uid),
@@ -81,7 +97,7 @@ function ChatScreen({ chat, messages }) {
 			},
 			{ merge: true }
 		);
-		console.log(user.photoURL);
+		// add the message in the chats
 		addDoc(
 			collection(
 				doc(collection(db, "chats"), router.query.id),
@@ -95,6 +111,7 @@ function ChatScreen({ chat, messages }) {
 			}
 		);
 		setTextInput("");
+		scrollToBottom();
 	};
 	return (
 		<Container>
@@ -103,13 +120,26 @@ function ChatScreen({ chat, messages }) {
 					{recipient ? (
 						<UserAvatar src={recipient.photoURL} />
 					) : (
-						<UserAvatar />
+						<UserAvatar>{recipientEmail[0]}</UserAvatar>
 					)}
 					<RecipientName>
 						<RecipientHeading>
 							{recipient ? recipient.name : recipientEmail}
 						</RecipientHeading>
-						<LastSeen>Just now</LastSeen>
+						{recipientUserSnapshot ? (
+							<LastSeen>
+								Last Active:{" "}
+								{recipient?.lastSeen?.toDate() ? (
+									<TimeAgo
+										datetime={recipient?.lastSeen?.toDate()}
+									/>
+								) : (
+									"Unavailable"
+								)}
+							</LastSeen>
+						) : (
+							<LastSeen>Loading last seen...</LastSeen>
+						)}
 					</RecipientName>
 				</RecipientContainer>
 				<ButtonContainer>
@@ -121,7 +151,10 @@ function ChatScreen({ chat, messages }) {
 					</IconButton>
 				</ButtonContainer>
 			</Header>
-			<MessageContainer>{showMessages()}</MessageContainer>
+			<MessageContainer>
+				{showMessages()}
+				<EndOfMessage ref={endOfMessageRef} />
+			</MessageContainer>
 			<InputContainer disabled={!textInput} onSubmit={sendMessage}>
 				<IconButton>
 					<InsertEmoticonIcon />
@@ -154,7 +187,8 @@ export default ChatScreen;
 
 const MessageContainer = styled.div`
 	flex: 1;
-	height: 80vh;
+	min-height: 90vh;
+	padding: 30px;
 	overflow: scroll;
 	::-webkit-scrollbar {
 		display: none;
@@ -163,7 +197,9 @@ const MessageContainer = styled.div`
 	scrollbar-width: none; /* firefox */
 `;
 
-const EndOfMessage = styled.div``;
+const EndOfMessage = styled.div`
+	margin-bottom: 50px;
+`;
 
 const InputContainer = styled.form`
 	position: sticky;
@@ -171,6 +207,7 @@ const InputContainer = styled.form`
 	background-color: #ededed;
 	padding: 10px;
 	display: flex;
+	align-items: center;
 	width: 100%;
 	z-index: 100;
 `;
@@ -182,7 +219,10 @@ const Input = styled.input`
 	padding: 20px;
 	flex: 1;
 	background-color: white;
+	align-items: center;
 	margin: 0 15px;
+	position: sticky;
+	bottom: 0;
 `;
 
 const Container = styled.div``;
@@ -193,7 +233,7 @@ const Header = styled.div`
 	top: 0;
 	z-index: 100;
 	background-color: #ededed;
-	padding: 15px;
+	padding: 11px;
 	height: 80px;
 	display: flex;
 	justify-content: space-between;

@@ -15,9 +15,7 @@ import { auth, db } from "../../firebase";
 import getRecipientEmail from "../../utils/getRecipientEmail";
 
 function Chat({ messages, chat }) {
-	console.log(messages, chat);
 	const [user] = useAuthState(auth);
-	console.log(getRecipientEmail(JSON.parse(chat).users, user), user);
 	return (
 		<Container>
 			<Head>
@@ -47,7 +45,7 @@ export async function getServerSideProps(context) {
 	const messages = messagesRes?.docs
 		?.map((doc) => ({
 			id: doc.id,
-			...doc.data
+			...doc.data()
 		}))
 		.map((message) => ({
 			...message,
@@ -59,7 +57,6 @@ export async function getServerSideProps(context) {
 		id: chatRes.id,
 		...chatRes.data()
 	};
-	console.log("hey there", messages, chat);
 
 	return {
 		props: {
