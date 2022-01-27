@@ -76,6 +76,9 @@ function ChatScreen({ chat, messages }) {
 			setIsEntering(false);
 		}
 	}, [textInput]);
+	useEffect(() => {
+		scrollToBottom();
+	}, []);
 	const onTextChange = (e) => {
 		setTextInput(e.target.value);
 	};
