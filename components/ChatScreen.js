@@ -33,7 +33,6 @@ function ChatScreen({ chat, messages }) {
 		where("email", "==", recipientEmail)
 	);
 	const [recipientUserSnapshot] = useCollection(userRef);
-	console.log("here is recipient user snapshot", recipientUserSnapshot);
 	const recipient = recipientUserSnapshot?.docs?.[0]?.data();
 	const router = useRouter();
 	const [messagesSnapshot] = useCollection(
@@ -45,6 +44,9 @@ function ChatScreen({ chat, messages }) {
 			orderBy("timestamp", "asc")
 		)
 	);
+	useEffect(() => {
+		scrollToBottom();
+	}, [recipient]);
 	const showMessages = () => {
 		if (messagesSnapshot) {
 			return messagesSnapshot.docs.map((doc) => (
@@ -76,9 +78,9 @@ function ChatScreen({ chat, messages }) {
 			setIsEntering(false);
 		}
 	}, [textInput]);
-	useEffect(() => {
-		scrollToBottom();
-	}, []);
+	// useEffect(() => {
+	// 	scrollToBottom();
+	// }, []);
 	const onTextChange = (e) => {
 		setTextInput(e.target.value);
 	};
