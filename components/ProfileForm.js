@@ -3,7 +3,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
 import { auth, db } from "../firebase";
 import CameraAlt from "@material-ui/icons/CameraAlt";
-import { Box, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import {
+	Box,
+	CircularProgress,
+	Menu,
+	MenuItem,
+	Tooltip
+} from "@material-ui/core";
 import { useCallback, useState, useEffect } from "react";
 import {
 	getStorage,
@@ -13,10 +19,14 @@ import {
 } from "firebase/storage";
 import { collection, doc, query, setDoc, where } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
+import CircularProgressWithLabel from "./CircularProgressWithLabel";
+
 function ProfileForm() {
 	const [user] = useAuthState(auth);
 	const [photoURL, setPhotoURL] = useState("");
 	const [anchorEl, setAnchorEl] = useState(null);
+	const [isPhotoUploading, setIsPhotoUploading] = useState(null);
+	const [progress, setProgress] = useState(null);
 
 	const [userSnapshot] = useCollection(
 		query(collection(db, "users"), where("email", "==", user?.email))
@@ -46,7 +56,7 @@ function ProfileForm() {
 		const file = e.target?.files?.[0];
 		if (file) {
 			// reader.readAsDataURL(file);
-			const storageRef = ref(storage, `images/${file.name}`);
+			const storageRef = ref(storage, `images/${Date.now()}${file.name}`);
 			setPhotoURL(URL.createObjectURL(file));
 			const uploadTask = uploadBytesResumable(storageRef, file);
 			handleClose();
@@ -55,12 +65,20 @@ function ProfileForm() {
 				(snapshot) => {
 					// Observe state change events such as progress, pause, and resume
 					// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+					setIsPhotoUploading(true);
+
+					console.log(snapshot);
 					const progress =
 						(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+					setProgress(
+						snapshot.bytesTransferred / snapshot.totalBytes
+					) * 100;
 					console.log("Upload is " + progress + "% done");
 				},
 				(error) => {
 					// Handle unsuccessful uploads
+					setIsPhotoUploading(false);
+					console.log(error);
 				},
 				() => {
 					// Handle successful uploads on complete
@@ -79,6 +97,7 @@ function ProfileForm() {
 							);
 						}
 					);
+					setIsPhotoUploading(false);
 				}
 			);
 		}
@@ -134,6 +153,11 @@ function ProfileForm() {
 					<MenuItem>Remove Photo</MenuItem>
 				</Menu>
 			</ImageContainer>
+			{isPhotoUploading && (
+				<ProgressContainer>
+					<CircularProgress />
+				</ProgressContainer>
+			)}
 		</Container>
 	);
 }
@@ -165,8 +189,10 @@ const ImageContainer = styled.div`
 	background-size: cover;
 `;
 
-const PreviewContainer = styled.div`
-	opacity: 0;
+const ProgressContainer = styled.div`
+	width: 100%;
+	display: flex;
+	justify-content: center;
 `;
 
 const ImageOverlay = styled.div`
