@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Avatar, Button, IconButton } from "@material-ui/core";
+import { Avatar, Button, IconButton, Tooltip } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
@@ -9,9 +9,34 @@ import { addDoc, collection, where, query } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "./Chat";
+import { useState } from "react";
+import SettingsMenu from "./SettingsMenu";
+import Profile from "./Profile";
 
 function Sidebar() {
 	const [user] = useAuthState(auth);
+
+	const [userSnapshot] = useCollection(
+		query(collection(db, "users"), where("email", "==", user.email))
+	);
+	// create anchor el for more vert menu
+	const [settingAnchorEl, setSettingAnchorEl] = useState(null);
+	const handleMoreClick = (e) => {
+		setSettingAnchorEl(e.currentTarget);
+	};
+	const handleMoreClose = () => {
+		setSettingAnchorEl(null);
+	};
+
+	// create anchor el for profile toggleDrawer
+	const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+	const handleProfileClick = (e) => {
+		setProfileAnchorEl(e.currentTarget);
+	};
+	const handleProfileClose = () => {
+		setProfileAnchorEl(null);
+	};
+
 	const userChatRef = query(
 		collection(db, "chats"),
 		where("users", "array-contains", user?.email)
@@ -44,28 +69,38 @@ function Sidebar() {
 		);
 		return !!chat;
 	};
-	const signOut = () => {
-		auth.signOut();
-	};
+
 	return (
 		<Container>
+			<Profile anchor={profileAnchorEl} onClose={handleProfileClose} />
 			<Header>
-				{user?.photoURL ? (
+				{userSnapshot && userSnapshot?.docs?.[0]?.data()?.photoURL ? (
 					<UserAvatar
-						onClick={signOut}
+						onClick={handleProfileClick}
 						alt={user?.name}
-						src={user?.photoURL}
+						src={userSnapshot?.docs?.[0]?.data()?.photoURL}
 					/>
 				) : (
-					<UserAvatar>{user.email[0]}</UserAvatar>
+					<UserAvatar onClick={handleProfileClick}>
+						{user.email[0]}
+					</UserAvatar>
 				)}
+
 				<IconsContainer>
-					<IconButton>
-						<ChatIcon />
-					</IconButton>
-					<IconButton>
-						<MoreVertIcon />
-					</IconButton>
+					<Tooltip title="New Chat">
+						<IconButton onClick={createChat}>
+							<ChatIcon />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title="Menu">
+						<IconButton onClick={handleMoreClick}>
+							<MoreVertIcon />
+						</IconButton>
+					</Tooltip>
+					<SettingsMenu
+						anchorEl={settingAnchorEl}
+						handleClose={handleMoreClose}
+					/>
 				</IconsContainer>
 			</Header>
 			<Search>

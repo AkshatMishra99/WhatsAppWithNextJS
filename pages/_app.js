@@ -3,25 +3,45 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import Login from "./login";
 import Loading from "../components/Loading";
-import { useEffect } from "react";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useCallback, useEffect } from "react";
+import {
+	doc,
+	setDoc,
+	serverTimestamp,
+	collection,
+	getDoc,
+	where
+} from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 function MyApp({ Component, pageProps }) {
 	const [user, loading] = useAuthState(auth);
-	useEffect(() => {
+	console.log(user?.uid);
+	const getUser = useCallback(async () => {
+		let update;
 		if (user) {
-			setDoc(
-				doc(db, "users", user.uid),
-				{
+			const userDetails = await getDoc(doc(db, "users", user?.uid));
+			console.log(userDetails.data());
+			if (userDetails && userDetails.data()?.photoURL) {
+				update = {
+					email: user.email,
+					lastSeen: serverTimestamp(),
+					name: user.displayName
+				};
+			} else {
+				update = update = {
 					email: user.email,
 					lastSeen: serverTimestamp(),
 					name: user.displayName,
 					photoURL: user.photoURL
-				},
-				{ merge: true }
-			);
+				};
+			}
+			setDoc(doc(db, "users", user.uid), update, { merge: true });
 		}
 	}, [user]);
+	useEffect(() => {
+		getUser();
+	}, [getUser]);
 
 	if (loading) return <Loading />;
 	if (!user) return <Login />;

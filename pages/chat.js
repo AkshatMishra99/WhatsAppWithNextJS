@@ -2,13 +2,16 @@ import Image from "next/image";
 import React from "react";
 import Sidebar from "../components/Sidebar";
 import styled from "styled-components";
+import Placeholder from "../components/Placeholder";
+import Head from "next/head";
 function chat() {
 	return (
 		<Container>
+			<Head>
+				<title>Welcome to whatsapp</title>
+			</Head>
 			<Sidebar />
-			<ImageElement>
-				<ImageContent alt="placeholder" src="/images/chat.png" />
-			</ImageElement>
+			<Placeholder />
 		</Container>
 	);
 }
@@ -18,16 +21,4 @@ export default chat;
 const Container = styled.div`
 	display: flex;
 	flex: 1;
-`;
-const ImageElement = styled.div`
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	justify-content: center;
-	padding: 0 20px;
-`;
-
-const ImageContent = styled.img`
-	width: 250px;
-	margin: auto;
 `;

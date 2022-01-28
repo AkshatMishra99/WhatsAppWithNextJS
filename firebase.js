@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import firebase from "firebase/compat/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -7,17 +8,22 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-	apiKey: "AIzaSyD8G54HDQuWsKcpqpr4Lyq5GCgY1ZGcbw0",
-	authDomain: "whatsapp-2-6e816.firebaseapp.com",
-	databaseURL: "https://whatsapp-2-6e816-default-rtdb.firebaseio.com",
-	projectId: "whatsapp-2-6e816",
-	storageBucket: "whatsapp-2-6e816.appspot.com",
-	messagingSenderId: "911412677324",
-	appId: "1:911412677324:web:7d93624713b82e58d2d069"
+	apiKey: "AIzaSyA6oDTW4mGG3ie12LT_NSxB2KHhUcbJydk",
+	authDomain: "whatsapp-enhanced.firebaseapp.com",
+	projectId: "whatsapp-enhanced",
+	storageBucket: "whatsapp-enhanced.appspot.com",
+	messagingSenderId: "1042134068534",
+	appId: "1:1042134068534:web:dcaca637390491e79f9797",
+	measurementId: "G-9ZWE4CFBWG"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+if (!firebase.apps.length) {
+	app = firebase.initializeApp(firebaseConfig);
+} else {
+	app = firebase.app(); // if already initialized, use that one
+}
 
 const db = getFirestore(app);
 const auth = getAuth(app);
