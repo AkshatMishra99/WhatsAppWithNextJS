@@ -194,6 +194,7 @@ const MessageContainer = styled.div`
 	flex: 1;
 	min-height: 90vh;
 	padding: 30px;
+	padding-top: 90px;
 	overflow: scroll;
 	::-webkit-scrollbar {
 		display: none;
