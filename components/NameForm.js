@@ -51,9 +51,6 @@ function NameForm({ isEditing, setIsEditing }) {
 			setName(text.slice(0, 26));
 		}
 	};
-	const handlePressEsc = (e) => {
-		console.log(e.key);
-	};
 	return (
 		<Container>
 			<Label>Your Name</Label>
@@ -93,7 +90,6 @@ function NameForm({ isEditing, setIsEditing }) {
 							e.target.value = "";
 							e.target.value = val;
 						}}
-						onKeyPress={handlePressEsc}
 					/>
 				</DetailForm>
 			)}

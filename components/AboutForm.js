@@ -15,7 +15,6 @@ function NameForm({ isEditing, setIsEditing }) {
 	const [user] = useAuthState(auth);
 	const [about, setAbout] = useState("");
 	const [text, setText] = useState(about);
-	const [leftCount, setLeftCount] = useState(Math.max(25 - about.length, 0));
 	const getUserDetails = useCallback(async () => {
 		if (user) {
 			const docRef = doc(db, "users", user?.uid);
@@ -26,10 +25,6 @@ function NameForm({ isEditing, setIsEditing }) {
 	}, [user]);
 	useEffect(getUserDetails, [getUserDetails]);
 
-	useEffect(() => {
-		setLeftCount(Math.max(25 - text.length, 0));
-	}, [text]);
-
 	const handleChange = (e) => {
 		const value = e.target.value;
 		if (value.length <= 25) {
@@ -38,8 +33,7 @@ function NameForm({ isEditing, setIsEditing }) {
 	};
 
 	const handleSave = async (e) => {
-		console.log("this is saved ", text);
-		if (text.length < 26 || text.length > 0) {
+		if (text.length > 0) {
 			setIsEditing(false);
 			await setDoc(
 				doc(db, "users", user?.uid),
@@ -50,9 +44,6 @@ function NameForm({ isEditing, setIsEditing }) {
 			);
 			setAbout(text.slice(0, 26));
 		}
-	};
-	const handlePressEsc = (e) => {
-		console.log(e.key);
 	};
 	return (
 		<Container>
@@ -81,7 +72,6 @@ function NameForm({ isEditing, setIsEditing }) {
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position="end">
-									<LeftCount>{leftCount}</LeftCount>
 									<Tooltip title="Click to save, ESC to cancel">
 										<CheckIconButton onClick={handleSave} />
 									</Tooltip>
@@ -93,7 +83,6 @@ function NameForm({ isEditing, setIsEditing }) {
 							e.target.value = "";
 							e.target.value = val;
 						}}
-						onKeyPress={handlePressEsc}
 					/>
 				</DetailForm>
 			)}
