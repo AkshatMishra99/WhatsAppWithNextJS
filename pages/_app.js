@@ -22,18 +22,22 @@ function MyApp({ Component, pageProps }) {
 		if (user) {
 			const userDetails = await getDoc(doc(db, "users", user?.uid));
 			console.log(userDetails.data());
-			if (userDetails && userDetails.data()?.photoURL) {
+			if (userDetails && userDetails.data()) {
 				update = {
 					email: user.email,
 					lastSeen: serverTimestamp(),
-					name: user.displayName
+					name: userDetails.data()?.name,
+					about:
+						userDetails.data()?.about ||
+						"Hey everyone I'm using Whatsapp by Akshat ;)"
 				};
 			} else {
 				update = update = {
 					email: user.email,
 					lastSeen: serverTimestamp(),
 					name: user.displayName,
-					photoURL: user.photoURL
+					photoURL: user.photoURL,
+					about: "Hey everyone I'm using Whatsapp by Akshat ;)"
 				};
 			}
 			setDoc(doc(db, "users", user.uid), update, { merge: true });

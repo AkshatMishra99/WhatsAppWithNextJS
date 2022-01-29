@@ -26,7 +26,6 @@ function ProfileForm() {
 	const [photoURL, setPhotoURL] = useState("");
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isPhotoUploading, setIsPhotoUploading] = useState(null);
-	const [progress, setProgress] = useState(null);
 
 	const [userSnapshot] = useCollection(
 		query(collection(db, "users"), where("email", "==", user?.email))
@@ -52,7 +51,6 @@ function ProfileForm() {
 	const open = Boolean(anchorEl);
 
 	const handleImageSelect = (e) => {
-		console.log(e.target.files[0], e);
 		const file = e.target?.files?.[0];
 		if (file) {
 			// reader.readAsDataURL(file);
@@ -67,12 +65,8 @@ function ProfileForm() {
 					// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
 					setIsPhotoUploading(true);
 
-					console.log(snapshot);
 					const progress =
 						(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-					setProgress(
-						snapshot.bytesTransferred / snapshot.totalBytes
-					) * 100;
 					console.log("Upload is " + progress + "% done");
 				},
 				(error) => {
@@ -85,7 +79,6 @@ function ProfileForm() {
 					// For instance, get the download URL: https://firebasestorage.googleapis.com/...
 					getDownloadURL(uploadTask.snapshot.ref).then(
 						(downloadURL) => {
-							console.log("File available at", downloadURL);
 							setDoc(
 								doc(db, "users", user.uid),
 								{
@@ -102,7 +95,16 @@ function ProfileForm() {
 			);
 		}
 	};
-	console.log(photoURL);
+
+	const removeProfilePic = () => {
+		if (user)
+			setDoc(
+				doc(db, "users", user?.uid),
+				{ photoURL: "" },
+				{ merge: true }
+			);
+		handleClose();
+	};
 	return (
 		<Container>
 			<ImageContainer src={photoURL}>
@@ -116,7 +118,7 @@ function ProfileForm() {
 					aria-expanded={open ? "true" : undefined}
 				>
 					<Box>
-						<Tooltip title="Profile Pic">
+						<Tooltip title="Change Profile Pic">
 							<CameraAlt
 								style={{
 									fontSize: 40,
@@ -137,7 +139,6 @@ function ProfileForm() {
 					}}
 				>
 					<MenuItem>
-						<form action=""></form>
 						<input
 							type="file"
 							id="fileDialogId"
@@ -150,7 +151,7 @@ function ProfileForm() {
 						/>
 						Upload Photo
 					</MenuItem>
-					<MenuItem>Remove Photo</MenuItem>
+					<MenuItem onClick={removeProfilePic}>Remove Photo</MenuItem>
 				</Menu>
 			</ImageContainer>
 			{isPhotoUploading && (
@@ -183,7 +184,8 @@ const ImageContainer = styled.div`
 	justify-content: center;
 	margin: 10% auto;
 	position: relative;
-	background-image: url(${(props) => (props.src ? props.src : "")});
+	background-image: url(${(props) =>
+		props.src ? props.src : "/images/profilepic.svg"});
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;

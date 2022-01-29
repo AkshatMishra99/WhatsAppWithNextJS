@@ -1,12 +1,35 @@
-import { IconButton, SwipeableDrawer } from "@material-ui/core";
-import React from "react";
+import { Drawer, IconButton } from "@material-ui/core";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ProfileForm from "./ProfileForm";
+import UserDetails from "./UserDetails";
 function Profile({ anchor, onClose }) {
 	const open = Boolean(anchor);
+	const [isNameEditing, setIsNameEditing] = useState(false);
+	const [isAboutEditing, setIsAboutEditing] = useState(false);
 	return (
-		<SwipeableDrawer anchor={"left"} open={open} onClose={onClose}>
+		<Drawer
+			anchor={"left"}
+			open={open}
+			hideBackdrop={true}
+			ModalProps={{
+				keepMounted: true
+			}}
+			onClose={(e) => {
+				if (e.type === "keydown" && e.code === "Escape") {
+					if (!isNameEditing && !isAboutEditing) {
+						onClose();
+					} else if (isNameEditing) {
+						setIsNameEditing(false);
+					} else if (isAboutEditing) {
+						setIsAboutEditing(false);
+					}
+				} else {
+					onClose();
+				}
+			}}
+		>
 			<Container>
 				<Header>
 					<NavigationContainer>
@@ -17,8 +40,14 @@ function Profile({ anchor, onClose }) {
 					</NavigationContainer>
 				</Header>
 				<ProfileForm />
+				<UserDetails
+					isNameEditing={isNameEditing}
+					setIsNameEditing={setIsNameEditing}
+					isAboutEditing={isAboutEditing}
+					setIsAboutEditing={setIsAboutEditing}
+				/>
 			</Container>
-		</SwipeableDrawer>
+		</Drawer>
 	);
 }
 
@@ -39,7 +68,7 @@ const Header = styled.div`
 	align-items: flex-end;
 	width: 100%;
 	background-color: #008069;
-	height: 25%;
+	height: 15%;
 `;
 
 const NavigationContainer = styled.div`
