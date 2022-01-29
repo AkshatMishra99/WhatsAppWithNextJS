@@ -27,9 +27,8 @@ function NameForm({ isEditing, setIsEditing }) {
 
 	const handleChange = (e) => {
 		const value = e.target.value;
-		if (value.length <= 25) {
-			setText(String(value));
-		}
+
+		setText(String(value));
 	};
 
 	const handleSave = async (e) => {
@@ -38,7 +37,7 @@ function NameForm({ isEditing, setIsEditing }) {
 			await setDoc(
 				doc(db, "users", user?.uid),
 				{
-					about: text.slice(0, 26)
+					about: text
 				},
 				{ merge: true }
 			);
