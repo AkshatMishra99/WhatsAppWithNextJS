@@ -21,4 +21,5 @@ export default chat;
 const Container = styled.div`
 	display: flex;
 	flex: 1;
+	overflow-x: scroll;
 `;

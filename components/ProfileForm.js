@@ -168,12 +168,6 @@ export default ProfileForm;
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	overflow-y: scroll;
-	::-webkit-scrollbar {
-		display: none;
-	}
-	-ms-overflow-style: none; /* IE and Edge */
-	scrollbar-width: none; /* firefox */
 `;
 
 const ImageContainer = styled.div`

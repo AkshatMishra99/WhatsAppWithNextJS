@@ -59,10 +59,18 @@ const Container = styled.div`
 	flex-direction: column;
 	height: 100vh;
 	background-color: #f0f2f5;
+	overflow-y: scroll;
+	::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* firefox */
 `;
 
 const Header = styled.div`
 	position: sticky;
+	top: 0;
+	z-index: 105;
 	/* padding: 20px 20px 5px; */
 	display: flex;
 	align-items: flex-end;
