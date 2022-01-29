@@ -28,7 +28,7 @@ function NameForm({ isEditing, setIsEditing }) {
 	const handleChange = (e) => {
 		const value = e.target.value;
 		if (value.length <= 25) {
-			setText(String(value).slice(0, 25));
+			setText(String(value));
 		}
 	};
 
@@ -42,7 +42,7 @@ function NameForm({ isEditing, setIsEditing }) {
 				},
 				{ merge: true }
 			);
-			setAbout(text.slice(0, 26));
+			setAbout(text);
 		}
 	};
 	return (
