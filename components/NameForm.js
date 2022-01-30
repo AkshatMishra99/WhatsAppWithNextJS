@@ -11,10 +11,16 @@ import styled from "styled-components";
 import { auth, db } from "../firebase";
 import EditIcon from "@material-ui/icons/Edit";
 import CheckIcon from "@material-ui/icons/Check";
+import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
+import dynamic from "next/dynamic";
+const CustomEmojiPicker = dynamic(() => import("./EmojiForm"), {
+	ssr: false
+});
 function NameForm({ isEditing, setIsEditing }) {
 	const [user] = useAuthState(auth);
 	const [name, setName] = useState("");
 	const [text, setText] = useState(name);
+	const [emojiAnchorEl, setEmojiAnchorEl] = useState(null);
 	const [leftCount, setLeftCount] = useState(Math.max(25 - name.length, 0));
 	const getUserDetails = useCallback(async () => {
 		if (user) {
@@ -40,7 +46,6 @@ function NameForm({ isEditing, setIsEditing }) {
 	const handleSave = async (e) => {
 		console.log("this is saved ", text);
 		if (text.length < 26) {
-			setIsEditing(false);
 			await setDoc(
 				doc(db, "users", user?.uid),
 				{
@@ -49,8 +54,21 @@ function NameForm({ isEditing, setIsEditing }) {
 				{ merge: true }
 			);
 			setName(text.slice(0, 26));
+			setIsEditing(false);
 		}
 	};
+	const handleEmojiOpen = (e) => {
+		setEmojiAnchorEl(e.currentTarget);
+	};
+	const handleEmojiClose = (e) => {
+		setEmojiAnchorEl(null);
+	};
+	const onEmojiClick = (e, emojiObject) => {
+		console.log(emojiObject.emoji);
+		setText((text) => `${text}${emojiObject.emoji}`);
+	};
+	const open = Boolean(emojiAnchorEl);
+	const id = open ? "emoji-popover" : undefined;
 	return (
 		<Container>
 			<Label>Your Name</Label>
@@ -66,7 +84,14 @@ function NameForm({ isEditing, setIsEditing }) {
 					</IconButton>
 				</DetailContainer>
 			)}
-
+			<CustomEmojiPicker
+				id={id}
+				open={open}
+				anchorEl={emojiAnchorEl}
+				onClose={handleEmojiClose}
+				onEmojiClick={onEmojiClick}
+				anchorPosition={{ top: 150, left: 300 }}
+			/>
 			{isEditing && (
 				<DetailForm>
 					<TextField
@@ -79,6 +104,12 @@ function NameForm({ isEditing, setIsEditing }) {
 							endAdornment: (
 								<InputAdornment position="end">
 									<LeftCount>{leftCount}</LeftCount>
+									<Tooltip title="Insert Emoji">
+										<InsertEmoticon
+											onClick={handleEmojiOpen}
+											aria-describedby={id}
+										/>
+									</Tooltip>
 									<Tooltip title="Click to save, ESC to cancel">
 										<CheckIconButton onClick={handleSave} />
 									</Tooltip>
@@ -112,6 +143,11 @@ const Container = styled.div`
 const Label = styled.div`
 	color: #008069;
 	margin-bottom: 20px;
+`;
+
+const InsertEmoticon = styled(InsertEmoticonIcon)`
+	cursor: pointer;
+	margin: 0 5px;
 `;
 
 const DetailContainer = styled.div`

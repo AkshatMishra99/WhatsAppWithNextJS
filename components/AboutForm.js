@@ -11,10 +11,16 @@ import styled from "styled-components";
 import { auth, db } from "../firebase";
 import EditIcon from "@material-ui/icons/Edit";
 import CheckIcon from "@material-ui/icons/Check";
+import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
+import dynamic from "next/dynamic";
+const CustomEmojiPicker = dynamic(() => import("./EmojiForm"), {
+	ssr: false
+});
 function NameForm({ isEditing, setIsEditing }) {
 	const [user] = useAuthState(auth);
 	const [about, setAbout] = useState("");
 	const [text, setText] = useState(about);
+	const [emojiAnchorEl, setEmojiAnchorEl] = useState(null);
 	const getUserDetails = useCallback(async () => {
 		if (user) {
 			const docRef = doc(db, "users", user?.uid);
@@ -44,6 +50,18 @@ function NameForm({ isEditing, setIsEditing }) {
 			setAbout(text);
 		}
 	};
+	const handleEmojiOpen = (e) => {
+		setEmojiAnchorEl(e.currentTarget);
+	};
+	const handleEmojiClose = (e) => {
+		setEmojiAnchorEl(null);
+	};
+	const onEmojiClick = (e, emojiObject) => {
+		console.log(emojiObject.emoji);
+		setText((text) => `${text}${emojiObject.emoji}`);
+	};
+	const open = Boolean(emojiAnchorEl);
+	const id = open ? "emoji-popover" : undefined;
 	return (
 		<Container>
 			<Label>About</Label>
@@ -59,7 +77,14 @@ function NameForm({ isEditing, setIsEditing }) {
 					</IconButton>
 				</DetailContainer>
 			)}
-
+			<CustomEmojiPicker
+				id={id}
+				open={open}
+				anchorEl={emojiAnchorEl}
+				onClose={handleEmojiClose}
+				onEmojiClick={onEmojiClick}
+				anchorPosition={{ top: 360, left: 300 }}
+			/>
 			{isEditing && (
 				<DetailForm>
 					<TextField
@@ -71,6 +96,12 @@ function NameForm({ isEditing, setIsEditing }) {
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position="end">
+									<Tooltip title="Insert Emoji">
+										<InsertEmoticon
+											onClick={handleEmojiOpen}
+											aria-describedby={id}
+										/>
+									</Tooltip>
 									<Tooltip title="Click to save, ESC to cancel">
 										<CheckIconButton onClick={handleSave} />
 									</Tooltip>
@@ -107,6 +138,10 @@ const Label = styled.div`
 
 const DetailContainer = styled.div`
 	display: flex;
+`;
+const InsertEmoticon = styled(InsertEmoticonIcon)`
+	cursor: pointer;
+	margin: 0 5px;
 `;
 
 const TextContainer = styled.div`
