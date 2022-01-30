@@ -1,4 +1,4 @@
-import { Avatar, IconButton } from "@material-ui/core";
+import { Avatar, Drawer, IconButton, Popover } from "@material-ui/core";
 import {
 	collection,
 	doc,
@@ -24,6 +24,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import TimeAgo from "timeago-react";
 import { useRef } from "react";
+import dynamic from "next/dynamic";
+const CustomEmojiPicker = dynamic(() => import("./EmojiForm"), {
+	ssr: false
+});
+
 function ChatScreen({ chat, messages }) {
 	const [user] = useAuthState(auth);
 	const recipientEmail = getRecipientEmail(chat.users, user);
@@ -71,6 +76,9 @@ function ChatScreen({ chat, messages }) {
 	};
 	const [isEntering, setIsEntering] = useState(false);
 	const [textInput, setTextInput] = useState("");
+
+	const [anchorEl, setAnchorEl] = useState(null);
+	const inputRef = useRef(null);
 	useEffect(() => {
 		if (textInput) {
 			setIsEntering(true);
@@ -118,6 +126,20 @@ function ChatScreen({ chat, messages }) {
 		setTextInput("");
 		scrollToBottom();
 	};
+	const onEmojiClick = (e, emojiObj) => {
+		console.log(emojiObj, emojiObj.emoji);
+		setTextInput((textInput) => {
+			return `${textInput}${emojiObj.emoji}`;
+		});
+	};
+	const open = Boolean(anchorEl);
+	const id = open ? "simple-popover" : undefined;
+	const handleClick = (e) => {
+		setAnchorEl(endOfMessageRef.current);
+	};
+	const handleEmojiClose = () => {
+		setAnchorEl(null);
+	};
 	return (
 		<Container>
 			<Header>
@@ -160,14 +182,28 @@ function ChatScreen({ chat, messages }) {
 				{showMessages()}
 				<EndOfMessage ref={endOfMessageRef} />
 			</MessageContainer>
+			<CustomEmojiPicker
+				id={id}
+				anchorEl={anchorEl}
+				open={open}
+				onClose={handleEmojiClose}
+				anchorPosition={{ top: 350, left: 300 }}
+				onEmojiClick={onEmojiClick}
+			/>
 			<InputContainer disabled={!textInput} onSubmit={sendMessage}>
-				<IconButton>
+				<IconButton onClick={handleClick} aria-describedby={id}>
 					<InsertEmoticonIcon />
 				</IconButton>
 				<Input
 					placeholder="Type a message"
 					onChange={onTextChange}
 					value={textInput}
+					autoFocus
+					onFocus={function (e) {
+						var val = e.target.value;
+						e.target.value = "";
+						e.target.value = val;
+					}}
 				/>
 				{isEntering && (
 					<IconButton
