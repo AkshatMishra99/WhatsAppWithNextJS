@@ -27,7 +27,7 @@ function ProfileForm() {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isPhotoUploading, setIsPhotoUploading] = useState(null);
 
-	const [userSnapshot] = useCollection(
+	const [userSnapshot, loading] = useCollection(
 		query(collection(db, "users"), where("email", "==", user?.email))
 	);
 	const setUser = useCallback(async () => {
@@ -106,7 +106,7 @@ function ProfileForm() {
 		handleClose();
 	};
 	return (
-		<Container>
+		<Container loading={loading}>
 			<ImageContainer src={photoURL}>
 				<ImageOverlay
 					type="file"
@@ -166,8 +166,10 @@ function ProfileForm() {
 export default ProfileForm;
 
 const Container = styled.div`
-	display: flex;
+	display: ${(props) => (props.loading ? "none" : "flex")};
+	height: ${(props) => (props.loading ? "0" : "fit-content")};
 	flex-direction: column;
+	transition: all 0.5s;
 `;
 
 const ImageContainer = styled.div`
