@@ -6,6 +6,7 @@ import {
 	getDoc,
 	orderBy
 } from "firebase/firestore";
+import _ from "lodash";
 import Head from "next/head";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -15,14 +16,14 @@ import ContactInfo from "../../components/ContactInfo";
 import Sidebar from "../../components/Sidebar";
 import { auth, db } from "../../firebase";
 import getRecipientEmail from "../../utils/getRecipientEmail";
-import { useTheme } from "@material-ui/core/styles";
 import { useMediaQuery } from "@material-ui/core";
 import useWindowDimensions from "../../hooks/useWindowDimension";
+import { useRouter } from "next/router";
 function Chat({ messages, chat }) {
 	const [user] = useAuthState(auth);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const { width: windowWidth } = useWindowDimensions();
-	const theme = useTheme();
+	const router = useRouter();
 	const matches = useMediaQuery("(min-width:1100px)");
 	const drawerWidth = matches ? 350 : `${windowWidth - 300}`;
 	const handleDrawerOpen = () => {
@@ -31,6 +32,10 @@ function Chat({ messages, chat }) {
 	const handleDrawerClose = () => {
 		setDrawerOpen(false);
 	};
+	if (!_.includes(JSON.parse(chat)?.users, user.email)) {
+		router.push("/401");
+		return <div></div>;
+	}
 	return (
 		<Container>
 			<Head>
