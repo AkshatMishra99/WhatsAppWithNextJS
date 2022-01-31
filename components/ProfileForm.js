@@ -67,12 +67,10 @@ function ProfileForm() {
 
 					const progress =
 						(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-					console.log("Upload is " + progress + "% done");
 				},
 				(error) => {
 					// Handle unsuccessful uploads
 					setIsPhotoUploading(false);
-					console.log(error);
 				},
 				() => {
 					// Handle successful uploads on complete

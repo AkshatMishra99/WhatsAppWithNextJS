@@ -16,12 +16,10 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 function MyApp({ Component, pageProps }) {
 	const [user, loading] = useAuthState(auth);
-	console.log(user?.uid);
 	const getUser = useCallback(async () => {
 		let update;
 		if (user) {
 			const userDetails = await getDoc(doc(db, "users", user?.uid));
-			console.log(userDetails.data());
 			if (userDetails && userDetails.data()) {
 				update = {
 					email: user.email,

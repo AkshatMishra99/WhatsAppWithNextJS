@@ -44,7 +44,6 @@ function NameForm({ isEditing, setIsEditing }) {
 	};
 
 	const handleSave = async (e) => {
-		console.log("this is saved ", text);
 		if (text.length < 26) {
 			await setDoc(
 				doc(db, "users", user?.uid),
@@ -64,7 +63,6 @@ function NameForm({ isEditing, setIsEditing }) {
 		setEmojiAnchorEl(null);
 	};
 	const onEmojiClick = (e, emojiObject) => {
-		console.log(emojiObject.emoji);
 		setText((text) => `${text}${emojiObject.emoji}`);
 	};
 	const open = Boolean(emojiAnchorEl);

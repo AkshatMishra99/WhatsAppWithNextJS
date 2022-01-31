@@ -11,7 +11,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import RecipientAbout from "./RecipientAbout";
 function ContactInfo({ open, drawerWidth, handleClose, chat }) {
 	const [user] = useAuthState(auth);
-	const [userDetails, setUserDetails] = useState({});
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	const handleBackdropOpen = () => {
 		setOpenBackdrop(true);
@@ -20,7 +19,6 @@ function ContactInfo({ open, drawerWidth, handleClose, chat }) {
 		setOpenBackdrop(false);
 	};
 	const recipientEmail = getRecipientEmail(chat?.users, user);
-	console.log(chat, recipientEmail);
 	const userRef = query(
 		collection(db, "users"),
 		where("email", "==", recipientEmail)
@@ -34,7 +32,6 @@ function ContactInfo({ open, drawerWidth, handleClose, chat }) {
 	};
 	const [recipientSnapshot, loading] = useCollection(userRef);
 	const recipient = recipientSnapshot?.docs?.[0]?.data();
-	console.log(recipient);
 	return (
 		<Drawer
 			anchor="right"

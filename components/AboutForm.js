@@ -57,7 +57,6 @@ function NameForm({ isEditing, setIsEditing }) {
 		setEmojiAnchorEl(null);
 	};
 	const onEmojiClick = (e, emojiObject) => {
-		console.log(emojiObject.emoji);
 		setText((text) => `${text}${emojiObject.emoji}`);
 	};
 	const open = Boolean(emojiAnchorEl);

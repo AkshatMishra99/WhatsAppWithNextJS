@@ -20,7 +20,7 @@ import { useMediaQuery } from "@material-ui/core";
 import useWindowDimensions from "../../hooks/useWindowDimension";
 function Chat({ messages, chat }) {
 	const [user] = useAuthState(auth);
-	const [drawerOpen, setDrawerOpen] = useState(true);
+	const [drawerOpen, setDrawerOpen] = useState(false);
 	const { width: windowWidth } = useWindowDimensions();
 	const theme = useTheme();
 	const matches = useMediaQuery("(min-width:1100px)");

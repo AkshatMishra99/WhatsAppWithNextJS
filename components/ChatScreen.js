@@ -126,7 +126,6 @@ function ChatScreen({ chat, messages, handleDrawerOpen }) {
 		scrollToBottom();
 	};
 	const onEmojiClick = (e, emojiObj) => {
-		console.log(emojiObj, emojiObj.emoji);
 		setTextInput((textInput) => {
 			return `${textInput}${emojiObj.emoji}`;
 		});
