@@ -1,9 +1,46 @@
 import styled from "styled-components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import moment from "moment";
-import { auth } from "../firebase";
-function Message({ user, message }) {
+import _ from "lodash";
+import { auth, db } from "../firebase";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+function Message({ user, message, messageId }) {
 	const [userLoggedIn] = useAuthState(auth);
+	const router = useRouter();
+	const chatId = router.query.id;
+	useEffect(() => {
+		const seenMessage = async () => {
+			if (!messageId || !chatId) return;
+			const message = await getDoc(
+				doc(
+					collection(
+						doc(collection(db, "chats"), chatId),
+						"messages"
+					),
+					messageId
+				)
+			);
+			const seenBy = _.get(message.data(), "seenBy", []);
+			if (!_.includes(seenBy, userLoggedIn.email) && messageId) {
+				const newSeenBy = _.uniq(_.concat(seenBy, userLoggedIn.email));
+				console.log("here is the error", newSeenBy, seenBy, messageId);
+				await setDoc(
+					doc(
+						collection(
+							doc(collection(db, "chats"), chatId),
+							"messages"
+						),
+						messageId
+					),
+					{ seenBy: newSeenBy },
+					{ merge: true }
+				);
+			}
+		};
+		seenMessage();
+	}, [chatId, messageId, userLoggedIn.email]);
 	const timestamp = moment(message?.timestamp).format("h:mm a");
 	const TypeOfMessage = user === userLoggedIn.email ? Sender : Receiver;
 	return (

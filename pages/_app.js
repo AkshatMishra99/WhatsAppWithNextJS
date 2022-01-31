@@ -3,16 +3,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import Login from "./login";
 import Loading from "../components/Loading";
+// import addSeenByAndAvailableTo from "../scripts/script1";
 import { useCallback, useEffect } from "react";
-import {
-	doc,
-	setDoc,
-	serverTimestamp,
-	collection,
-	getDoc,
-	where
-} from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+// import { useCollection } from "react-firebase-hooks/firestore";
 
 function MyApp({ Component, pageProps }) {
 	const [user, loading] = useAuthState(auth);
@@ -43,6 +37,7 @@ function MyApp({ Component, pageProps }) {
 	}, [user]);
 	useEffect(() => {
 		getUser();
+		// addSeenByAndAvailableTo();
 	}, [getUser]);
 
 	if (loading) return <Loading />;

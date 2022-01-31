@@ -17,7 +17,7 @@ function Sidebar() {
 	const [user] = useAuthState(auth);
 
 	const [userSnapshot] = useCollection(
-		query(collection(db, "users"), where("email", "==", user.email))
+		query(collection(db, "users"), where("email", "==", user?.email))
 	);
 	// create anchor el for more vert menu
 	const [settingAnchorEl, setSettingAnchorEl] = useState(null);
@@ -57,7 +57,8 @@ function Sidebar() {
 			// we need to add the chat into the 'chat' DB
 
 			await addDoc(collection(db, "chats"), {
-				users: [user?.email, input]
+				users: [user?.email, input],
+				availableTo: [user?.email, input]
 			});
 		}
 	};
@@ -74,39 +75,42 @@ function Sidebar() {
 		<Container>
 			<Profile anchor={profileAnchorEl} onClose={handleProfileClose} />
 			<Header>
-				{userSnapshot && userSnapshot?.docs?.[0]?.data()?.photoURL ? (
-					<UserAvatar
-						onClick={handleProfileClick}
-						alt={user?.name}
-						src={userSnapshot?.docs?.[0]?.data()?.photoURL}
-					/>
-				) : (
-					<UserAvatar onClick={handleProfileClick}>
-						{user.email[0]}
-					</UserAvatar>
-				)}
+				<NavBar>
+					{userSnapshot &&
+					userSnapshot?.docs?.[0]?.data()?.photoURL ? (
+						<UserAvatar
+							onClick={handleProfileClick}
+							alt={user?.name}
+							src={userSnapshot?.docs?.[0]?.data()?.photoURL}
+						/>
+					) : (
+						<UserAvatar onClick={handleProfileClick}>
+							{user.email[0]}
+						</UserAvatar>
+					)}
 
-				<IconsContainer>
-					<Tooltip title="New Chat">
-						<IconButton onClick={createChat}>
-							<ChatIcon />
-						</IconButton>
-					</Tooltip>
-					<Tooltip title="Menu">
-						<IconButton onClick={handleMoreClick}>
-							<MoreVertIcon />
-						</IconButton>
-					</Tooltip>
-					<SettingsMenu
-						anchorEl={settingAnchorEl}
-						handleClose={handleMoreClose}
-					/>
-				</IconsContainer>
+					<IconsContainer>
+						<Tooltip title="New Chat">
+							<IconButton onClick={createChat}>
+								<ChatIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Menu">
+							<IconButton onClick={handleMoreClick}>
+								<MoreVertIcon />
+							</IconButton>
+						</Tooltip>
+						<SettingsMenu
+							anchorEl={settingAnchorEl}
+							handleClose={handleMoreClose}
+						/>
+					</IconsContainer>
+				</NavBar>
+				<Search>
+					<SearchIcon />
+					<SearchInput placeholder="Search in chat.." />
+				</Search>
 			</Header>
-			<Search>
-				<SearchIcon />
-				<SearchInput placeholder="Search in chat.." />
-			</Search>
 			<SidebarButton onClick={createChat}>Start a new chat</SidebarButton>
 			{chatsSnapshot?.docs.map((chat) => (
 				<Chat key={chat.id} id={chat.id} users={chat.data().users} />
@@ -136,16 +140,23 @@ const Container = styled.div`
 
 const Header = styled.div`
 	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
+	flex-direction: column;
+	/* justify-content: space-between; */
+	/* align-items: center; */
 	position: sticky;
 	top: 0;
 	z-index: 1;
 	border-bottom: 1px solid whitesmoke;
-	padding: 15px;
-	height: 80px;
+	padding: 15px 15px 0;
+	height: fit-content;
 	background-color: white;
+`;
+
+const NavBar = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	border-bottom: 1px solid whitesmoke;
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -162,7 +173,7 @@ const IconsContainer = styled.div`
 
 const Search = styled.div`
 	width: 100%;
-	padding: 20px;
+	padding: 20px 5px;
 	display: flex;
 	align-items: center;
 `;

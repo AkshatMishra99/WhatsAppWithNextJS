@@ -57,6 +57,7 @@ function ChatScreen({ chat, messages, handleDrawerOpen }) {
 			return messagesSnapshot.docs.map((doc) => (
 				<Message
 					key={doc.id}
+					messageId={doc.id}
 					user={doc?.data()?.user}
 					message={{
 						...doc?.data(),
@@ -119,7 +120,9 @@ function ChatScreen({ chat, messages, handleDrawerOpen }) {
 				timestamp: serverTimestamp(),
 				message: textInput,
 				user: user?.email,
-				photoURL: user.photoURL ? user.photoURL : ""
+				photoURL: user.photoURL ? user.photoURL : "",
+				availableTo: [user?.email, recipientEmail],
+				seenBy: [user?.email]
 			}
 		);
 		setTextInput("");
