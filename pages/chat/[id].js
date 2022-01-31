@@ -32,7 +32,7 @@ function Chat({ messages, chat }) {
 	const handleDrawerClose = () => {
 		setDrawerOpen(false);
 	};
-	if (!_.includes(JSON.parse(chat)?.users, user.email)) {
+	if (!_.includes(JSON.parse(chat)?.users, user?.email)) {
 		router.push("/401");
 		return <div></div>;
 	}

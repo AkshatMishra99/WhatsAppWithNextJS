@@ -69,6 +69,7 @@ function ChatScreen({ chat, messages, handleDrawerOpen }) {
 			return messages.map((message) => (
 				<Message
 					message={message}
+					messageId={message.id}
 					user={message.user}
 					key={message.id}
 				/>

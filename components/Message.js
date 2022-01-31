@@ -23,8 +23,13 @@ function Message({ user, message, messageId }) {
 				)
 			);
 			const seenBy = _.get(message.data(), "seenBy", []);
-			if (!_.includes(seenBy, userLoggedIn.email) && messageId) {
-				const newSeenBy = _.uniq(_.concat(seenBy, userLoggedIn.email));
+			if (
+				message &&
+				message.data() &&
+				!_.includes(seenBy, userLoggedIn?.email) &&
+				messageId
+			) {
+				const newSeenBy = _.uniq(_.concat(seenBy, userLoggedIn?.email));
 				console.log("here is the error", newSeenBy, seenBy, messageId);
 				await setDoc(
 					doc(
@@ -40,12 +45,12 @@ function Message({ user, message, messageId }) {
 			}
 		};
 		seenMessage();
-	}, [chatId, messageId, userLoggedIn.email]);
+	}, [chatId, messageId, userLoggedIn?.email]);
 	const timestamp = moment(message?.timestamp).format("h:mm a");
-	const TypeOfMessage = user === userLoggedIn.email ? Sender : Receiver;
+	const TypeOfMessage = user === userLoggedIn?.email ? Sender : Receiver;
 	return (
-		<Container userSelf={message.user === userLoggedIn.email}>
-			<TypeOfMessage userSelf={message.user === userLoggedIn.email}>
+		<Container userSelf={message?.user === userLoggedIn?.email}>
+			<TypeOfMessage userSelf={message?.user === userLoggedIn?.email}>
 				<MessageContent>
 					{message.message}
 					<Timestamp>

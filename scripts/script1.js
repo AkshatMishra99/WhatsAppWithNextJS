@@ -25,19 +25,19 @@ module.exports = async function addSeenByAndAvailableTo() {
 			collection(doc(db, "chats", id), "messages")
 		);
 
-		// console.log(messages?.docs);
-		// _.forEach(messages?.docs, async (message) => {
-		// 	const messageId = message.id;
-		// 	if (!message.data().message) {
-		// 		console.log("ye hai saala");
-		// 		// deleteDoc(doc(collection(chatRef, "messages"), message.id));
-		// 	} else console.log(message, message.id, message.data());
-		// 	// if (messageId)
-		// 	// 	await setDoc(
-		// 	// 		doc(collection(chatRef, "messages"), messageId),
-		// 	// 		{ seenBy: availableTo, availableTo: availableTo },
-		// 	// 		{ merge: true }
-		// 	// 	);
-		// });
+		console.log(messages?.docs);
+		_.forEach(messages?.docs, async (message) => {
+			const messageId = message.id;
+			if (!message.data().message) {
+				console.log("ye hai saala");
+				deleteDoc(doc(collection(chatRef, "messages"), message.id));
+			} else console.log(message, message.id, message.data());
+			// if (messageId)
+			// 	await setDoc(
+			// 		doc(collection(chatRef, "messages"), messageId),
+			// 		{ seenBy: availableTo, availableTo: availableTo },
+			// 		{ merge: true }
+			// 	);
+		});
 	});
 };
