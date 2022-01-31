@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { auth, db } from "../firebase";
 import CameraAlt from "@material-ui/icons/CameraAlt";
 import {
@@ -165,10 +165,19 @@ function ProfileForm() {
 
 export default ProfileForm;
 
+const grow = keyframes`
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+`;
 const Container = styled.div`
 	display: ${(props) => (props.loading ? "none" : "flex")};
 	height: ${(props) => (props.loading ? "0" : "fit-content")};
 	flex-direction: column;
+	animation: ${grow} 0.5s;
 	transition: all 0.5s;
 `;
 

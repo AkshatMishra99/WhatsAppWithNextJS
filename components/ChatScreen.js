@@ -1,4 +1,4 @@
-import { Avatar, Drawer, IconButton, Popover } from "@material-ui/core";
+import { Avatar, IconButton, Popover } from "@material-ui/core";
 import {
 	collection,
 	doc,
@@ -29,7 +29,7 @@ const CustomEmojiPicker = dynamic(() => import("./EmojiForm"), {
 	ssr: false
 });
 
-function ChatScreen({ chat, messages }) {
+function ChatScreen({ chat, messages, handleDrawerOpen }) {
 	const [user] = useAuthState(auth);
 	const recipientEmail = getRecipientEmail(chat.users, user);
 	const endOfMessageRef = useRef(null);
@@ -78,7 +78,6 @@ function ChatScreen({ chat, messages }) {
 	const [textInput, setTextInput] = useState("");
 
 	const [anchorEl, setAnchorEl] = useState(null);
-	const inputRef = useRef(null);
 	useEffect(() => {
 		if (textInput) {
 			setIsEntering(true);
@@ -143,7 +142,7 @@ function ChatScreen({ chat, messages }) {
 	return (
 		<Container>
 			<Header>
-				<RecipientContainer>
+				<RecipientContainer onClick={handleDrawerOpen}>
 					{recipient ? (
 						<UserAvatar src={recipient.photoURL} />
 					) : (
@@ -288,6 +287,7 @@ const RecipientContainer = styled.div`
 	flex: 1;
 	justify-content: flex-start;
 	align-items: center;
+	cursor: pointer;
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -315,5 +315,5 @@ const ButtonContainer = styled.div`
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	flex: 1;
+	/* flex: 1; */
 `;

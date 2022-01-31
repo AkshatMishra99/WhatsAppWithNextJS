@@ -13,9 +13,9 @@ function Profile({ anchor, onClose }) {
 			anchor={"left"}
 			open={open}
 			hideBackdrop={true}
-			ModalProps={{
-				keepMounted: true
-			}}
+			// ModalProps={{
+			// 	keepMounted: true
+			// }}
 			onClose={(e) => {
 				if (e.type === "keydown" && e.code === "Escape") {
 					if (!isNameEditing && !isAboutEditing) {
